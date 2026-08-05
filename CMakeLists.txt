@@ -9,6 +9,9 @@ project(
 set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
+# -------------------------
+# Main interpreter
+# -------------------------
 add_executable(cpp_lox
     src/main.cpp
     src/Lox.cpp
@@ -18,3 +21,16 @@ add_executable(cpp_lox
 )
 
 target_include_directories(cpp_lox PRIVATE include)
+
+# -------------------------
+# AST Generator
+# -------------------------
+add_executable(GenerateAst
+    tools/ast/main.cpp
+    tools/ast/GenerateAst.cpp
+)
+
+target_include_directories(GenerateAst PRIVATE
+    include
+    tools/ast
+)
