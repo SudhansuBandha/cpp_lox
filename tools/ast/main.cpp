@@ -13,10 +13,10 @@ int main(int argc, char* argv[])
 
     std::vector<std::string> exprTypes =
     {
-        "Binary   : Expr* left, Token op, Expr* right",
-        "Grouping : Expr* expression",
+        "Binary   : std::unique_ptr<Expr> left, Token op, std::unique_ptr<Expr> right",
+        "Grouping : std::unique_ptr<Expr> expression",
         "Literal  : LiteralValue value",
-        "Unary    : Token op, Expr* right"
+        "Unary    : Token op, std::unique_ptr<Expr> right"
     };
 
     GenerateAst::defineAst(

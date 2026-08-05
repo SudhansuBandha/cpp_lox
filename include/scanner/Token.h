@@ -6,7 +6,7 @@
 
 #include "TokenType.h"
 
-using Literal = std::variant<
+using LiteralValue = std::variant<
     std::monostate,
     double,
     std::string,
@@ -17,13 +17,13 @@ class Token {
 public:
     TokenType type;
     std::string lexeme;
-    Literal literal;
+    LiteralValue literal;
     int line;
 
     Token(
         TokenType type,
         std::string lexeme,
-        Literal literal,
+        LiteralValue literal,
         int line)
         : type(type),
           lexeme(std::move(lexeme)),
