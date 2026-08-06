@@ -5,9 +5,9 @@
 
 int main(int argc, char* argv[])
 {
-    if (argc != 2)
+    if (argc != 3)
     {
-        std::cerr << "Usage: GenerateAst <output directory>\n";
+        std::cerr << "Usage: GenerateAst <output directory header> <output directory source>\n";
         return 64;
     }
 
@@ -21,6 +21,7 @@ int main(int argc, char* argv[])
 
     GenerateAst::defineAst(
         argv[1],
+        argv[2],
         "Expr",
         exprTypes);
 

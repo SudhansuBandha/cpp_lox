@@ -56,22 +56,13 @@ GenerateAst::parseFields(std::string_view fieldList)
     return fields;
 }
 
-void GenerateAst::defineAst(
-    const fs::path& outputDir,
+void GenerateAst::generateHeader(
+    std::ofstream& writer,
     const std::string& baseName,
-    const std::vector<std::string>& types)
+    const std::vector<std::string>& types
+)
 {
-    fs::path outputFile = outputDir / (baseName + ".h");
-
-    std::ofstream writer(outputFile);
-
-    if (!writer.is_open())
-    {
-        throw std::runtime_error(
-            "Unable to create file: " + outputFile.string());
-    }
-
-    writer <<
+       writer <<
 R"(#pragma once
 
 #include <memory>
@@ -115,6 +106,44 @@ R"(#pragma once
 
     // Generate the Visitor interface
     defineVisitor(writer, baseName, types);
+
+}
+
+void GenerateAst::generateSource(
+    std::ofstream& writer,
+    const std::string& baseName,
+    const std::vector<std::string>& types
+)
+{
+    writer << "#include \"ast/" << baseName << ".h\"\n\n";
+}
+
+void GenerateAst::defineAst(
+    const fs::path& outputDirHeader,
+    const fs::path& outputDirSource,
+    const std::string& baseName,
+    const std::vector<std::string>& types)
+{
+    fs::path outputFileHeader = outputDirHeader / (baseName + ".h");
+    fs::path outputFileSource = outputDirSource / (baseName + ".cpp");
+
+    std::ofstream writerHeader(outputFileHeader);
+    std::ofstream writerSource(outputFileSource);
+
+    if (!writerHeader.is_open())
+    {
+        throw std::runtime_error(
+            "Unable to create file: " + outputFileHeader.string());
+    }
+
+      if (!writerSource.is_open())
+    {
+        throw std::runtime_error(
+            "Unable to create file: " + outputFileSource.string());
+    }
+
+    generateHeader(writerHeader, baseName, types);
+    generateSource(writerSource, baseName, types);
 
 }
 

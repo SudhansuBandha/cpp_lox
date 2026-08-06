@@ -22,11 +22,24 @@ class GenerateAst
 {
 public:
     static void defineAst(
-        const fs::path& outputDir,
+        const fs::path& outputDirHeader,
+        const fs::path& outputDirSource,
         const std::string& baseName,
         const std::vector<std::string>& types);
 
 private:
+    static void generateHeader(
+        std::ofstream& writer,
+        const std::string& baseName,
+        const std::vector<std::string>& types
+    );
+
+    static void generateSource(
+        std::ofstream& writer,
+        const std::string& baseName,
+        const std::vector<std::string>& types
+    );
+    
     static void defineVisitor(
         std::ofstream& writer,
         const std::string& baseName,
@@ -56,15 +69,5 @@ private:
         std::string_view fieldList
     );
 
-    static void generateHeader(
-        std::ofstream& writer,
-        const std::string& baseName,
-        const std::vector<std::string>& types
-    );
 
-    static void generateSource(
-        std::ofstream& writer,
-        const std::string& baseName,
-        const std::vector<std::string>& types
-    );
 };
