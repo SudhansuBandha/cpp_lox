@@ -10,14 +10,6 @@
 #include <string_view>
 
 namespace fs = std::filesystem;
-
-struct Field{
-    std::string_view type;
-    std::string_view name;
-};
-
-static Field parseField(std::string_view field);
-
 class GenerateAst
 {
 public:
@@ -40,6 +32,11 @@ private:
         const std::vector<std::string>& types
     );
 
+    static void defineForwardDeclarations(
+        std::ofstream& writer,
+        const std::vector<std::string>& types
+    );
+    
     static void defineVisitor(
         std::ofstream& writer,
         const std::string& baseName,
@@ -55,13 +52,17 @@ private:
         const std::string& className,
         const std::string& fieldList);
     
+        static void defineGetters(
+        std::ofstream& out,
+        const std::string& fieldList);
+
     static void defineTypeImplementation(
         std::ofstream& writer,
         const std::string& baseName,
         const std::string& className,
         const std::string& fieldList
     ); 
-       
+
    static std::string_view trim(const std::string_view& str);   
    
    struct FieldInfo

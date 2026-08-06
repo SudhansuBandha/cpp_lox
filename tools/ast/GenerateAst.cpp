@@ -56,6 +56,26 @@ GenerateAst::parseFields(std::string_view fieldList)
     return fields;
 }
 
+void GenerateAst::defineForwardDeclarations(
+    std::ofstream& writer,
+    const std::vector<std::string>& types
+){
+    writer << "// Forward declarations\n";
+    writer << "class Expr;\n";
+    writer << "class ExprVisitor;\n";
+
+    for (const auto& type : types){
+        const auto colon = type.find(':');
+
+        std::string_view typeView{type};
+
+        const auto className =
+            trim(typeView.substr(0, colon));
+
+        writer << "class " << className << ";\n";
+    }
+}
+
 void GenerateAst::generateHeader(
     std::ofstream& writer,
     const std::string& baseName,
@@ -77,6 +97,16 @@ R"(#pragma once
 // ------------------------------------------------------------
 
 )";
+
+   //Genearte forward declarations
+    defineForwardDeclarations(writer, types);
+    writer << "\n\n";
+
+    // Generate the Visitor interface
+    defineVisitor(writer, baseName, types);
+
+    // Generate the base clase
+    defineBaseClass(writer, baseName);
 
     writer << '\n';
 
@@ -100,12 +130,6 @@ R"(#pragma once
     }
 
     writer << "\n";
-
-    // Generate the base clase
-    defineBaseClass(writer, baseName);
-
-    // Generate the Visitor interface
-    defineVisitor(writer, baseName, types);
 
 }
 
@@ -252,7 +276,19 @@ void GenerateAst::defineType(
     }   
 
     writer << "        );\n\n";
-    
+
+    writer << "    void accept("
+       << baseName
+       << "Visitor& visitor) const override\n";
+    writer << "    {\n";
+    writer << "        visitor.visit"
+        << className
+        << baseName
+        << "(*this);\n";
+
+    writer << "    }\n\n";
+
+    defineGetters(writer, fieldList);
     writer << "\n";
 
     writer << "    private:\n";
@@ -266,19 +302,6 @@ void GenerateAst::defineType(
                 << "_;\n";
         }
 
-
-    writer << "    void accept("
-       << baseName
-       << "Visitor& visitor) const override\n";
-
-    writer << "    {\n";
-
-    writer << "        visitor.visit"
-        << className
-        << baseName
-        << "(*this);\n";
-
-    writer << "    }\n\n";
     writer << "};\n\n";  
 }
 
@@ -334,4 +357,36 @@ void GenerateAst::defineTypeImplementation(
 
     writer << "{\n";
     writer << "}\n\n";
+}
+
+void GenerateAst::defineGetters(
+    std::ofstream& out,
+    const std::string& fieldList)
+{
+    const auto fields = parseFields(fieldList);
+
+    for (std::size_t i = 0; i < fields.size(); ++i)
+    {
+        const auto& field = fields[i];
+
+        std::string getterName(fields[i].name);
+        getterName[0] = static_cast<unsigned char>(std::toupper(getterName[0]));
+        
+
+        if (field.type == "std::unique_ptr<Expr>")
+        {
+            out << "    const Expr* get" << getterName << "() const\n";
+            out << "    {\n";
+            out << "        return " << field.name << "_.get();\n";
+            out << "    }\n\n";
+        }
+        else
+        {
+            out << "    const " << field.type << "& get"
+                << getterName << "() const\n";
+            out << "    {\n";
+            out << "        return " << field.name << "_;\n";
+            out << "    }\n\n";
+        }
+    }
 }

@@ -11,89 +11,14 @@
 // Do not edit manually.
 // ------------------------------------------------------------
 
+// Forward declarations
+class Expr;
+class ExprVisitor;
+class Binary;
+class Grouping;
+class Literal;
+class Unary;
 
-class Binary : public Expr
-{
-    public:
-        Binary(
-            std::unique_ptr<Expr> left,
-            Token op,
-            std::unique_ptr<Expr> right
-        );
-
-
-    private:
-        std::unique_ptr<Expr> left_;
-        Token op_;
-        std::unique_ptr<Expr> right_;
-    void accept(ExprVisitor& visitor) const override
-    {
-        visitor.visitBinaryExpr(*this);
-    }
-
-};
-
-class Grouping : public Expr
-{
-    public:
-        Grouping(
-            std::unique_ptr<Expr> expression
-        );
-
-
-    private:
-        std::unique_ptr<Expr> expression_;
-    void accept(ExprVisitor& visitor) const override
-    {
-        visitor.visitGroupingExpr(*this);
-    }
-
-};
-
-class Literal : public Expr
-{
-    public:
-        Literal(
-            LiteralValue value
-        );
-
-
-    private:
-        LiteralValue value_;
-    void accept(ExprVisitor& visitor) const override
-    {
-        visitor.visitLiteralExpr(*this);
-    }
-
-};
-
-class Unary : public Expr
-{
-    public:
-        Unary(
-            Token op,
-            std::unique_ptr<Expr> right
-        );
-
-
-    private:
-        Token op_;
-        std::unique_ptr<Expr> right_;
-    void accept(ExprVisitor& visitor) const override
-    {
-        visitor.visitUnaryExpr(*this);
-    }
-
-};
-
-
-class Expr
-{
-public:
-    virtual ~Expr() = default;
-
-    virtual void accept(ExprVisitor& visitor) const = 0;
-};
 
 class ExprVisitor
 {
@@ -105,4 +30,123 @@ public:
     virtual void visitLiteralExpr(const Literal& expr) = 0;
     virtual void visitUnaryExpr(const Unary& expr) = 0;
 };
+
+class Expr
+{
+public:
+    virtual ~Expr() = default;
+
+    virtual void accept(ExprVisitor& visitor) const = 0;
+};
+
+
+class Binary : public Expr
+{
+    public:
+        Binary(
+            std::unique_ptr<Expr> left,
+            Token op,
+            std::unique_ptr<Expr> right
+        );
+
+    void accept(ExprVisitor& visitor) const override
+    {
+        visitor.visitBinaryExpr(*this);
+    }
+
+    const Expr* getLeft() const
+    {
+        return left_.get();
+    }
+
+    const Token& getOp() const
+    {
+        return op_;
+    }
+
+    const Expr* getRight() const
+    {
+        return right_.get();
+    }
+
+
+    private:
+        std::unique_ptr<Expr> left_;
+        Token op_;
+        std::unique_ptr<Expr> right_;
+};
+
+class Grouping : public Expr
+{
+    public:
+        Grouping(
+            std::unique_ptr<Expr> expression
+        );
+
+    void accept(ExprVisitor& visitor) const override
+    {
+        visitor.visitGroupingExpr(*this);
+    }
+
+    const Expr* getExpression() const
+    {
+        return expression_.get();
+    }
+
+
+    private:
+        std::unique_ptr<Expr> expression_;
+};
+
+class Literal : public Expr
+{
+    public:
+        Literal(
+            LiteralValue value
+        );
+
+    void accept(ExprVisitor& visitor) const override
+    {
+        visitor.visitLiteralExpr(*this);
+    }
+
+    const LiteralValue& getValue() const
+    {
+        return value_;
+    }
+
+
+    private:
+        LiteralValue value_;
+};
+
+class Unary : public Expr
+{
+    public:
+        Unary(
+            Token op,
+            std::unique_ptr<Expr> right
+        );
+
+    void accept(ExprVisitor& visitor) const override
+    {
+        visitor.visitUnaryExpr(*this);
+    }
+
+    const Token& getOp() const
+    {
+        return op_;
+    }
+
+    const Expr* getRight() const
+    {
+        return right_.get();
+    }
+
+
+    private:
+        Token op_;
+        std::unique_ptr<Expr> right_;
+};
+
 
