@@ -21,7 +21,7 @@ class Scanner{
         int line = 1;
         
         void addToken(TokenType type);
-        void addToken(TokenType type, const Literal& value);
+        void addToken(TokenType type, const LiteralValue& value);
         void scanToken();
 
         bool isAtEnd() const;

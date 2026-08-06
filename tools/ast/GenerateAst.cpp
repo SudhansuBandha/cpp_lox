@@ -116,6 +116,24 @@ void GenerateAst::generateSource(
 )
 {
     writer << "#include \"ast/" << baseName << ".h\"\n\n";
+    writer << "#include <utility>\n\n";
+
+    for (const auto& type : types)
+    {
+        std::string_view view{type};
+
+        const auto colon = view.find(':');
+
+        const auto className = trim(view.substr(0, colon));
+
+        const auto fieldList = trim(view.substr(colon + 1));
+
+        defineTypeImplementation(
+            writer,
+            baseName,
+            std::string(className),
+            std::string(fieldList));
+    }
 }
 
 void GenerateAst::defineAst(
@@ -264,3 +282,56 @@ void GenerateAst::defineType(
     writer << "};\n\n";  
 }
 
+void GenerateAst::defineTypeImplementation(
+    std::ofstream& writer,
+    const std::string& baseName,
+    const std::string& className,
+    const std::string& fieldList
+)
+{
+    const auto fields = parseFields(fieldList);
+
+    // Constructor signature
+    writer << className << "::" << className << "(\n";
+
+    for (std::size_t i = 0; i < fields.size(); ++i)
+    {
+        writer << "    "
+               << fields[i].type
+               << " "
+               << fields[i].name;
+
+        if (i + 1 != fields.size())
+        {
+            writer << ",";
+        }
+
+        writer << "\n";
+    }
+
+    writer << ")   :\n";
+
+    // Initializer list
+    if (!fields.empty())
+    {
+
+        for (std::size_t i = 0; i < fields.size(); ++i)
+        {
+            writer << "    "
+                   << fields[i].name
+                   << "_(std::move("
+                   << fields[i].name
+                   << "))";
+
+            if (i + 1 != fields.size())
+            {
+                writer << ",";
+            }
+
+            writer << "\n";
+        }
+    }
+
+    writer << "{\n";
+    writer << "}\n\n";
+}

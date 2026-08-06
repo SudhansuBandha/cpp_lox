@@ -18,6 +18,7 @@ add_executable(cpp_lox
     src/scanner/Scanner.cpp
     src/scanner/Token.cpp
     src/scanner/TokenType.cc
+    src/ast/Ast.cpp
 )
 
 target_include_directories(cpp_lox PRIVATE include)

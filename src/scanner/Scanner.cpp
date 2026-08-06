@@ -56,7 +56,7 @@ void Scanner::addToken(TokenType type){
 }
 
 /*Overloaded addToken*/
-void Scanner::addToken(TokenType type, const Literal& literal){
+void Scanner::addToken(TokenType type, const LiteralValue& literal){
     std::string lexeme = source.substr(
         start,
         current - start

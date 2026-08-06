@@ -39,7 +39,7 @@ private:
         const std::string& baseName,
         const std::vector<std::string>& types
     );
-    
+
     static void defineVisitor(
         std::ofstream& writer,
         const std::string& baseName,
@@ -54,7 +54,14 @@ private:
         const std::string& baseName,
         const std::string& className,
         const std::string& fieldList);
-
+    
+    static void defineTypeImplementation(
+        std::ofstream& writer,
+        const std::string& baseName,
+        const std::string& className,
+        const std::string& fieldList
+    ); 
+       
    static std::string_view trim(const std::string_view& str);   
    
    struct FieldInfo
