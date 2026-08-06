@@ -4,6 +4,9 @@
 #include <string>
 #include "lox/Lox.h"
 #include "scanner/Scanner.h"
+#include "ast/Expr.h"
+#include "ast/DebugVisitor.h"
+#include "ast/AstPrinter.h"
 
 bool Lox::hadError = false;
 
@@ -31,19 +34,37 @@ void Lox::runFile(const std::string& path){
 
 void Lox::runPrompt(){
 
-    while(true){
-        std::cout << "> ";
+    // while(true){
+    //     std::cout << "> ";
 
-        std::string line;
+    //     std::string line;
 
-        if(!std::getline(std::cin, line)){
-            break;
-        }
+    //     if(!std::getline(std::cin, line)){
+    //         break;
+    //     }
 
-        run(line);
+    //     run(line);
 
-        hadError = false;
-    }
+    //     hadError = false;
+    // }
+
+    auto expression = std::make_unique<Binary>(
+        std::make_unique<Unary>(
+            Token(TokenType::MINUS, "-", std::monostate{}, 1),
+            std::make_unique<Literal>(123.0)
+        ),
+        Token(TokenType::STAR, "*", std::monostate{}, 1),
+        std::make_unique<Grouping>(
+            std::make_unique<Literal>(45.67)
+        )
+    );
+
+    DebugVisitor debugVisitor;
+    AstPrinter astPrinter;
+
+    expression->accept(debugVisitor);
+
+    std::cout << "AST: " << astPrinter.print(*expression) << std::endl;
 }
 
 void Lox::run(const std::string& source){
