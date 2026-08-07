@@ -21,6 +21,7 @@ add_executable(cpp_lox
     src/ast/Expr.cpp
     src/ast/DebugVisitor.cpp
     src/ast/AstPrinter.cpp
+    src/parser/Parser.cpp
 )
 
 target_include_directories(cpp_lox PRIVATE include)
