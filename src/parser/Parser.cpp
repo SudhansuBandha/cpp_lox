@@ -8,7 +8,13 @@ std::unique_ptr<Expr> Parser::parse(){
 }
 
 std::unique_ptr<Expr> Parser::expression(){
-    return nullptr;
+    //return nullptr;
+    return equality();  
+}
+
+std::unique_ptr<Expr> Parser::equality(){
+    //Temporary 
+    return primary();
 }
 
 Token Parser::advance(){
@@ -57,3 +63,33 @@ Token Parser::consume(TokenType type, const std::string& message){
 }
 
 
+std::unique_ptr<Expr> Parser::primary(){
+    if(match({TokenType::FALSE})){
+        return std::make_unique<Literal>(false);
+    }
+
+    if(match({TokenType::TRUE})){
+        return std::make_unique<Literal>(true);
+    }
+
+    if(match({TokenType::NIL})){
+        return std::make_unique<Literal>(std::monostate{});
+    }
+
+    if(match({TokenType::NUMBER, TokenType::STRING})){
+        return std::make_unique<Literal>(previous().literal);
+    }
+
+    if(match({TokenType::LEFT_BRACE})){
+        auto expr = expression();
+
+        consume(TokenType::RIGHT_BRACE, "Expect ')' after expression.");
+
+        return std::make_unique<Grouping> (
+            std::move(expr)
+        );
+    }
+
+    throw std::runtime_error("Expected expression.");
+
+}

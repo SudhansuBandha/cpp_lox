@@ -27,4 +27,7 @@ class Parser{
         
         Token consume(TokenType type, const std::string& message);
 
+        std::unique_ptr<Expr> primary();
+        std::unique_ptr<Expr> equality();
+
 };
