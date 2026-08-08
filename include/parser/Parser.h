@@ -5,6 +5,12 @@
 #include "scanner/Token.h"
 #include "ast/Expr.h"
 
+class ParseError : public std::runtime_error {
+public:
+    ParseError()
+        : std::runtime_error("Parse error") {}
+};
+
 class Parser{
     public:
         explicit Parser(std::vector<Token> tokens);
@@ -33,5 +39,10 @@ class Parser{
         std::unique_ptr<Expr> term();
         std::unique_ptr<Expr> comparison();
         std::unique_ptr<Expr> equality();
-
+        
+        ParseError error(
+        const Token& token,
+        const std::string& message
+    );
 };
+

@@ -1,10 +1,16 @@
 #include "parser/Parser.h"
+#include <iostream>
 
 Parser::Parser(std::vector<Token> tokens):tokens(tokens){
 }
 
 std::unique_ptr<Expr> Parser::parse(){
-    return expression();
+    try {
+        return expression();
+    }
+    catch (const ParseError&) {
+        return nullptr;
+    }
 }
 
 std::unique_ptr<Expr> Parser::expression(){
@@ -75,7 +81,7 @@ Token Parser::consume(TokenType type, const std::string& message){
         return advance();
     }
 
-    throw std::runtime_error(message);
+    throw error(peek(), message);
 }
 
 std::unique_ptr<Expr> Parser::comparison() {
@@ -179,6 +185,33 @@ std::unique_ptr<Expr> Parser::primary(){
         );
     }
 
-    throw std::runtime_error("Expected expression.");
+    throw error(
+        peek(),
+        "Expect expression."
+    );
 
 }
+
+ParseError Parser::error(
+    const Token& token,
+    const std::string& message
+) {
+    if (token.type == TokenType::EOF_TOKEN) {
+        std::cerr
+            << "[line " << token.line
+            << "] Error at end: "
+            << message
+            << '\n';
+    } else {
+        std::cerr
+            << "[line " << token.line
+            << "] Error at '"
+            << token.lexeme
+            << "': "
+            << message
+            << '\n';
+    }
+
+    return ParseError();
+}
+
