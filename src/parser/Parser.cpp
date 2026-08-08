@@ -12,9 +12,25 @@ std::unique_ptr<Expr> Parser::expression(){
     return equality();  
 }
 
-std::unique_ptr<Expr> Parser::equality(){
-    //Temporary 
-    return primary();
+std::unique_ptr<Expr> Parser::equality(){ 
+    auto expr = comparison();
+
+    while (match({
+        TokenType::BANG_EQUAL,
+        TokenType::EQUAL_EQUAL
+    })) {
+        Token operatorToken = previous();
+
+        auto right = comparison();
+
+        expr = std::make_unique<Binary>(
+            std::move(expr),
+            operatorToken,
+            std::move(right)
+        );
+    }
+
+    return expr;
 }
 
 Token Parser::advance(){
@@ -62,6 +78,79 @@ Token Parser::consume(TokenType type, const std::string& message){
     throw std::runtime_error(message);
 }
 
+std::unique_ptr<Expr> Parser::comparison() {
+    auto expr = term();
+
+    while (match({
+        TokenType::GREATER,
+        TokenType::GREATER_EQUAL,
+        TokenType::LESS,
+        TokenType::LESS_EQUAL
+    })) {
+        Token operatorToken = previous();
+
+        auto right = term();
+
+        expr = std::make_unique<Binary>(
+            std::move(expr),
+            operatorToken,
+            std::move(right)
+        );
+    }
+
+    return expr;
+}
+
+std::unique_ptr<Expr> Parser::term() {
+    auto expr = factor();
+
+    while (match({
+        TokenType::MINUS,
+        TokenType::PLUS
+    })) {
+        Token operatorToken = previous();
+
+        auto right = factor();
+
+        expr = std::make_unique<Binary>(
+            std::move(expr),
+            operatorToken,
+            std::move(right)
+        );
+    }
+
+    return expr;
+}
+
+std::unique_ptr<Expr> Parser::factor(){
+    auto expr = unary();
+
+    while(match({TokenType::SLASH, TokenType::STAR})){
+        Token operatorToken = previous();
+        auto right = unary();
+
+        expr = std::make_unique<Binary>(
+            std::move(expr),
+            operatorToken,
+            std::move(right)
+        );
+    }
+    return expr;
+}
+
+std::unique_ptr<Expr> Parser::unary(){
+    if(match({ TokenType::BANG, TokenType::MINUS })){
+        Token operatorToken = previous();
+        auto right = unary();
+
+        return std::make_unique<Unary>(
+            operatorToken, 
+            std::move(right)
+        );
+    }
+    
+    return primary();
+};
 
 std::unique_ptr<Expr> Parser::primary(){
     if(match({TokenType::FALSE})){

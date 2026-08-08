@@ -25,7 +25,9 @@
 // }
 
 int main(){
-    std::string source = "123";
+    //std::string source = "1*2+3>5";
+
+    std::string source = "1 + 2 * 3 < 10 == true";
 
     Scanner scanner(source);
     std::vector<Token> tokens = scanner.scanTokens();
