@@ -29,7 +29,11 @@ int main(){
 
     //std::string source = "1 + 2 * 3 < 10 == true";
 
-    std::string source = "1 + ;";
+    //std::string source = "1 + ;";
+    
+    //std::string source = "\"Hello\"";
+    
+    std::string source = "(1 + 2) * 3";
     
     Scanner scanner(source);
     std::vector<Token> tokens = scanner.scanTokens();

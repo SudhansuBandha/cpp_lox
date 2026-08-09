@@ -105,6 +105,9 @@ void Scanner::scanToken(){
       case '>':
         addToken(match('=') ? TokenType::GREATER_EQUAL : TokenType::GREATER);
         break;
+     case '"':
+        string();
+        break;   
       case '/':
         if(match('/')){
             while(peek()!= '\n' && !isAtEnd()){

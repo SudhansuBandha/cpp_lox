@@ -175,10 +175,10 @@ std::unique_ptr<Expr> Parser::primary(){
         return std::make_unique<Literal>(previous().literal);
     }
 
-    if(match({TokenType::LEFT_BRACE})){
+    if(match({TokenType::LEFT_PAREN})){
         auto expr = expression();
 
-        consume(TokenType::RIGHT_BRACE, "Expect ')' after expression.");
+        consume(TokenType::RIGHT_PAREN, "Expect ')' after expression.");
 
         return std::make_unique<Grouping> (
             std::move(expr)

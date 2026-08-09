@@ -2,6 +2,7 @@
 
 #include <memory>
 #include <vector>
+#include <stdexcept>
 #include "scanner/Token.h"
 #include "ast/Expr.h"
 
